@@ -1,28 +1,23 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlmodel import Field, SQLModel, UUID
+import uuid
 
-from .database import Base
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(UUID(as_uuid=True),  primary_key=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
-
-    diagrams = relationship("Diagram", back_populates="owner")
-
-
-class Diagram(Base):
+class Diagram(SQLModel, table=True):
     __tablename__ = "diagrams"
 
-    id = Column(UUID(as_uuid=True), primary_key=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    config = Column(String)
+    id: str = Field(default=uuid.uuid4().__str__(), primary_key=True)
+    title: str = Field(index=True)
+    description:str = Field(index=True)
+    owner_id: str = Field( ("users.id"))
+    config: str = Field()
 
-    owner = relationship("User", back_populates="diagrams")
+    owner_id: str = Field(foreign_key="user.id")
+
+class User(SQLModel, table=True):
+    id: str = Field(default=uuid.uuid4().__str__(), primary_key=True)
+    email: str = Field(unique=True, index=True)
+    password: str = Field()
+    is_active: bool = Field(default=True)
+
+    # diagrams: list[Diagram] = Field(default=[])
+
+
