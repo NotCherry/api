@@ -2,39 +2,46 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Session
+
+from src.util import get_db
 
 
-from ..crud import get_current_active_user, get_current_user, get_user_email, get_user_username, get_users, create_user
+from ..crud import get_current_active_user, get_current_user, get_user_email, get_user_id, get_users, create_user, get_user_username
 from ..models import User
 
 router = APIRouter()
 
-@router.get("/user/{username}")
-def user(username: str):
-    return get_user_username(username)
+
+@router.get("/users/{id}")
+def user(id: int, db: Session = Depends(get_db)):
+    return get_user_id(db, id)
+
 
 @router.get("/users", response_model=list[User])
-def users(token: Annotated[str, Depends(get_current_user)]):
-    return get_users()
+def users(token: Annotated[str, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return get_users(db)
+
 
 class CreateUser(SQLModel):
     email: str
     password: str
 
+
 @router.post("/users")
-def db_create_user(user: User):
-    db_user = get_user_email(email=user.email)
+def db_create_user(user: User, db: Session = Depends(get_db)):
+    db_user = get_user_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    db_user = get_user_username(username=user.username)
+    db_user = get_user_username(db, username=user.username)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    return create_user(email=user.email, username=user.username, password=user.password)
+        raise HTTPException(
+            status_code=400, detail="Username already registered")
+    return create_user(db, email=user.email, username=user.username, password=user.password)
+
 
 @router.get("/users/me/", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     return current_user
-

@@ -1,4 +1,4 @@
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import create_engine
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 

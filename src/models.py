@@ -1,22 +1,25 @@
 from datetime import datetime
 from typing import Union
-from sqlmodel import Field, SQLModel, UUID
-import uuid
+from sqlmodel import Field, SQLModel
+
 
 class RecordExtender():
     created_at: datetime = Field(default_factory=lambda: datetime.now())
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(), sa_column_kwargs={"onupdate": lambda: datetime.now()})
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(
+    ), sa_column_kwargs={"onupdate": lambda: datetime.now()})
+
 
 class Diagram(SQLModel, RecordExtender, table=True):
     __tablename__ = "diagrams"
 
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(index=True)
-    description:str = Field(index=True)
-    owner_id: str = Field( ("users.id"))
+    description: str = Field(index=True)
+    owner_id: str = Field(("users.id"))
     config: str = Field()
 
     owner_id: str = Field(foreign_key="user.id")
+
 
 class User(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -24,7 +27,6 @@ class User(SQLModel, RecordExtender, table=True):
     username: str = Field(unique=True, index=True)
     password: str = Field()
     is_active: bool = Field(default=True)
-    
 
 
 class Organization(SQLModel, RecordExtender, table=True):
@@ -33,18 +35,27 @@ class Organization(SQLModel, RecordExtender, table=True):
     description: str = Field()
     owner_id: str = Field(foreign_key="user.id")
 
+
 class UserOrganization(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    # manager: bool = Field(default=False)
+    manager: bool = Field(default=False)
     user_id: str = Field(foreign_key="user.id")
     organization_id: str = Field(foreign_key="organization.id")
+
 
 class Project(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field()
     description: str = Field()
     owner_id: str = Field(foreign_key="user.id")
-    organization_id: str = Field(foreign_key="organization.id")
+    status_code: int = Field(foreign_key="projectstatuscode.id")
+    organization_id: str | None = Field(foreign_key="organization.id")
+
+
+class ProjectStatusCode(SQLModel, RecordExtender, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    status: str = Field(default="In Progress")
+
 
 class UserProject(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -52,7 +63,8 @@ class UserProject(SQLModel, RecordExtender, table=True):
     user_id: str = Field(foreign_key="user.id")
     project_id: str = Field(foreign_key="project.id")
 
-class Token(SQLModel, RecordExtender, table=True ):
+
+class Token(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
     access_token: str
     token_type: str
@@ -67,7 +79,3 @@ class TokenDataScopes(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
     token_data_id: str = Field(foreign_key="tokendata.id")
     scope: str = Field()
-
-
-
-

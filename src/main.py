@@ -1,10 +1,9 @@
-import os
+from dotenv import load_dotenv
 from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from contextlib import asynccontextmanager
 from fastapi.responses import JSONResponse
-import jwt
 from sqlmodel import SQLModel
 
 from slowapi import _rate_limit_exceeded_handler
@@ -17,15 +16,15 @@ from src.routers import auth
 
 from .routers import graph_processor
 from .routers import user
-from .exceptions import credentials_exception
-
 
 from .database import engine
-from .util import oauth2_scheme
+
+load_dotenv()
 
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,7 +42,7 @@ app.include_router(auth.router)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
 @app.get("/")
 async def get(token: Annotated[str, Depends(get_current_user)]):
     return JSONResponse(content={"message": "Hello, World"}, status_code=200)
-   
