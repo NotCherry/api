@@ -15,10 +15,8 @@ class Diagram(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(index=True)
     description: str = Field(index=True)
-    owner_id: str = Field(("users.id"))
     config: str = Field()
-
-    owner_id: str = Field(foreign_key="user.id")
+    project_id: str = Field(foreign_key="project.id")
 
 
 class User(SQLModel, RecordExtender, table=True):
@@ -47,9 +45,9 @@ class Project(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field()
     description: str = Field()
-    owner_id: str = Field(foreign_key="user.id")
+    owner_id: int = Field(foreign_key="user.id")
     status_code: int = Field(foreign_key="projectstatuscode.id")
-    organization_id: str | None = Field(foreign_key="organization.id")
+    organization_id: int | None = Field(foreign_key="organization.id")
 
 
 class ProjectStatusCode(SQLModel, RecordExtender, table=True):
@@ -73,9 +71,3 @@ class Token(SQLModel, RecordExtender, table=True):
 class TokenData(SQLModel, RecordExtender, table=True):
     id: int | None = Field(default=None, primary_key=True)
     username: Union[str, None] = None
-
-
-class TokenDataScopes(SQLModel, RecordExtender, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    token_data_id: str = Field(foreign_key="tokendata.id")
-    scope: str = Field()

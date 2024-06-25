@@ -4,3 +4,4 @@ venv
 instance
 data.log
 sql_app.db
+sql_test.db

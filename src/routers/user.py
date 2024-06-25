@@ -15,18 +15,13 @@ router = APIRouter()
 
 @router.get("/users/{id}")
 def user(id: int, db: Session = Depends(get_db)):
-    return get_user_id(db, id)
-
+    user = get_user_id(db, id)
+    user.password = None
+    return user
 
 @router.get("/users", response_model=list[User])
-def users(token: Annotated[str, Depends(get_current_user)], db: Session = Depends(get_db)):
+def users(user: Annotated[str, Depends(get_current_user)], db: Session = Depends(get_db)):
     return get_users(db)
-
-
-class CreateUser(SQLModel):
-    email: str
-    password: str
-
 
 @router.post("/users")
 def db_create_user(user: User, db: Session = Depends(get_db)):
@@ -37,7 +32,9 @@ def db_create_user(user: User, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(
             status_code=400, detail="Username already registered")
-    return create_user(db, email=user.email, username=user.username, password=user.password)
+    new_user = create_user(db, email=user.email, username=user.username, password=user.password)
+    new_user.password = None
+    return new_user
 
 
 @router.get("/users/me/", response_model=User)
