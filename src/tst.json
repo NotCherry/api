@@ -1,0 +1,40 @@
+{
+  "type": "run",
+  "data": [
+    {
+      "id": "9b0eff41-1ff2-4f8f-937c-ffc436ed9c4e",
+      "nodeType": "input",
+      "data": { "text": "Hilary" },
+      "pointingTo": ["290ab4f2-4624-4894-b337-91b12fd60dc3"]
+    },
+    {
+      "id": "b2da3bc2-eabb-4869-9af9-b38c86e01f69",
+      "nodeType": "input",
+      "data": { "text": "Jordan" },
+      "pointingTo": ["290ab4f2-4624-4894-b337-91b12fd60dc3"]
+    },
+    {
+      "id": "290ab4f2-4624-4894-b337-91b12fd60dc3",
+      "nodeType": "generate",
+      "data": { "text": "convert {} and {} into one json" },
+      "pointedBy": [
+        "9b0eff41-1ff2-4f8f-937c-ffc436ed9c4e",
+        "b2da3bc2-eabb-4869-9af9-b38c86e01f69"
+      ],
+      "pointingTo": ["85e3cf82-aa1f-4c35-a67d-7fc13164f9df"]
+    },
+    {
+      "id": "51308df1-7782-4cbf-a8db-980195a3c192",
+      "nodeType": "output",
+      "data": { "text": "" },
+      "pointedBy": ["85e3cf82-aa1f-4c35-a67d-7fc13164f9df"]
+    },
+    {
+      "id": "85e3cf82-aa1f-4c35-a67d-7fc13164f9df",
+      "nodeType": "generate",
+      "data": { "text": "review and add other data to {}" },
+      "pointedBy": ["290ab4f2-4624-4894-b337-91b12fd60dc3"],
+      "pointingTo": ["51308df1-7782-4cbf-a8db-980195a3c192"]
+    }
+  ]
+}
